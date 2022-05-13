@@ -4,8 +4,12 @@ from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
+import hashlib
+import xmltodict
+import time
+import random
 
-
+roles = [1, 100, 9]
 @app.route('/')
 def index():
     """
@@ -33,6 +37,9 @@ def count():
     # 执行自增操作
     if action == 'inc':
         counter = query_counterbyid(1)
+        result = random.choice(roles)
+        '''
+        counter = query_counterbyid(1)
         if counter is None:
             counter = Counters()
             counter.id = 1
@@ -46,7 +53,8 @@ def count():
             counter.updated_at = datetime.now()
             update_counterbyid(counter)
         return make_succ_response(counter.count)
-
+        '''
+        return make_succ_response(result)
     # 执行清0操作
     elif action == 'clear':
         delete_counterbyid(1)
