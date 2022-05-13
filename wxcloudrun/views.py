@@ -33,15 +33,15 @@ roles = {
 "minions": ["荡妇", "男爵", "间谍", "下毒者"],
 "demon": ["小恶魔"]
 }
-@app.route('/', methods=['POST'])
+@app.route('/', methods=['POST', 'GET'])
 def index():
     """
     :return: 返回index页面
     """
+    results = []
     if request.method == "POST":
         form_data = request.form
         NumPlayer = int(form_data.get("NumPlayer"))
-        results = []
         if NumPlayer > 15 or NumPlayer < 8:
             return "fake news"
         NumIndex = NumPlayer - 1
