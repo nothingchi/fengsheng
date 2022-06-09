@@ -187,6 +187,8 @@ def msg_deal():
         ToUserName = xml_dict.get("ToUserName")
         msg_type = xml_dict.get("MsgType")
         msg = xml_dict.get("Content")
+        resp_dict = make_msg(ToUserName, FromUserName, "testttt")
+        return xmltodict.unparse(resp_dict)
         if msg_type == "text":
             # 判断是否为房间号 + 座位号
             if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
@@ -213,6 +215,8 @@ def msg_deal():
             else:
                 rep_text = "知道了，别发了"
             resp_dict = make_msg(ToUserName, FromUserName, rep_text)
+        else:
+            resp_dict = make_msg(ToUserName, FromUserName, "哈哈")
         resp_xml_str = xmltodict.unparse(resp_dict)
         return resp_xml_str
 
@@ -289,7 +293,7 @@ def generate_roles(numPlayers):
     final_results = []
     for role in results:
         role_roomid = roomid + str(ind)
-        rooms[role_roomid] = role
+        rooms[role_roomid] = role[0] + " " + role[1]
         final_results.append((ind, role))
         ind += 1
     rooms[roomid] = final_results
