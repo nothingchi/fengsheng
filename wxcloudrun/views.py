@@ -212,9 +212,9 @@ def msg_deal():
                     rep_text = "格式错了，例子：染10"
             else:
                 rep_text = "知道了，别发了"
-            resp_dict = make_msg(ToUserName, FromUserName, rep_text)
+            resp_dict = make_msg(FromUserName, ToUserName, rep_text)
         else:
-            resp_dict = make_msg(ToUserName, FromUserName, "哈哈")
+            resp_dict = make_msg(FromUserName, ToUserName, "哈哈")
         resp_xml_str = xmltodict.unparse(resp_dict)
         return resp_xml_str
 
