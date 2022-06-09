@@ -100,7 +100,7 @@ def index():
         rooms[roomid] = results
         ind = 1
         for role in results:
-            role_roomid = roomid + ind
+            role_roomid = roomid + str(ind)
             rooms[role_roomid] = role
             ind += 1
 
@@ -184,7 +184,7 @@ def msg_deal():
         msg = xml_dict.get("Content")
         if msg_type == "text":
             # 判断是否为房间号 + 座位号
-            if (len(msg) == 5 or len(msg) == 6) and msg_type.isdigit():
+            if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
                 if msg in rooms:
                     rep_text = "你的角色是：" + rooms[msg]
                 else:
@@ -199,7 +199,7 @@ def msg_deal():
                         rep_numPlayers = "人数：{}\n".format(numPlayer)
                         rep_roles = "\n"
                         for ind, role in rooms[roomid]:
-                            rep_roles += "{}号: {}\n".format(ind, role)
+                            rep_roles += "{}号: {} {}\n".format(ind, role[0], role[1])
                         rep_text = rep_roomid + rep_mod + rep_numPlayers + rep_roles
                     else:
                         rep_text = "人数错了，8-15人"
@@ -281,8 +281,11 @@ def generate_roles(numPlayers):
         roomid = str(random.randint(1000, 9999))
     rooms[roomid] = results
     ind = 1
+    random.shuffle(results)
+    final_results = []
     for role in results:
         role_roomid = roomid + str(ind)
         rooms[role_roomid] = role
+        final_results.append((ind, role))
         ind += 1
     return roomid
