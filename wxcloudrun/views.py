@@ -223,6 +223,7 @@ def make_msg(text):
     return resp_dict
 
 def generate_roles(numPlayers):
+    results = []
     NumPlayer = numPlayers
     if NumPlayer > 15 or NumPlayer < 8:
         return "-1"
