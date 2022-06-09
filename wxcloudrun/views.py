@@ -64,13 +64,30 @@ def index():
         random.shuffle(roles["villagers"])
         villagers = roles["villagers"][0: villagersNum]
 
+        # 如果有酒鬼，在村名中随机标记一个
+        if "酒鬼" in outsider:
+            ran_ind = random.randint(0, len(villagers) - 1)
+            villagers[ran_ind] = villagers[ran_ind] + "(酒鬼)"
+
         for role in villagers:
             results.append(("村民", role))
+
         for role in outsider:
             if "酒鬼" == role:
                 continue
+            # 如果有隐士，在恶魔，爪牙，隐士中随机内置一个身份
+            if "隐士" == role:
+                random_inside_role = random.choice(["恶魔", "间谍", "荡妇", "男爵", "下毒者", "隐士"])
+                role = role + "({})".format(random_inside_role)
             results.append(("外来者", role))
         for role in minions:
+            # 如果有间谍，在村民，外来者，间谍中随机内置一个身份
+            # 为了避免套娃逻辑，间谍不会被内置为隐士和酒鬼
+            if "间谍" == role:
+                tmpRoles = ["管家", "圣徒", "间谍"]
+                tmpRoles.extend(roles["villagers"])
+                random_inside_role = random.choice(tmpRoles)
+                role = role + "({})".format(random_inside_role)
             results.append(("爪牙", role))
         results.append(("恶魔", "小恶魔"))
 
