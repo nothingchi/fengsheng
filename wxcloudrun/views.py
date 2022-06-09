@@ -149,3 +149,34 @@ def get_count():
     """
     counter = Counters.query.filter(Counters.id == 1).first()
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
+
+
+@app.route('/wechatinterface', methods=['GET', 'POST'])
+def msg_deal():
+    if request.method == "GET":
+        signature = request.args.get("signature")
+        timestamp = request.args.get("timestamp")
+        nonce = request.args.get("nonce")
+        echostr = request.args.get("echostr")
+        if not echostr:
+            return "404"
+        return echostr
+    if request.method == "POST":
+        xml_str = request.data
+        xml_dict = xmltodict.parse(xml_str)
+        xml_dict = xml_dict.get("xml")
+        msg_type = xml_dict.get("MsgType")
+        if msg_type == "text":
+            resp_dict = {
+                "xml": {
+                "ToUserName": xml_dict.get("FromUserName"),
+                "FromUserName": xml_dict.get("ToUserName"),
+                "CreateTime": int(time.time()),
+                "MsgType": "text",
+                "Content": "你的消息：" + xml_dict.get("Content")
+                }
+            }
+        resp_xml_str = xmltodict.unparse(resp_dict)
+        return resp_xml_str
+
+
