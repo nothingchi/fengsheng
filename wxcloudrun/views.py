@@ -178,6 +178,8 @@ def msg_deal():
         xml_str = request.data
         xml_dict = xmltodict.parse(xml_str)
         xml_dict = xml_dict.get("xml")
+        FromUserName = xml_dict.get("FromUserName")
+        ToUserName = xml_dict.get("ToUserName")
         msg_type = xml_dict.get("MsgType")
         msg = xml_dict.get("Content")
         if msg_type == "text":
@@ -205,15 +207,15 @@ def msg_deal():
                     rep_text = "格式错了，例子：染10"
             else:
                 rep_text = "知道了，别发了"
-            resp_dict = make_msg(rep_text)
+            resp_dict = make_msg(ToUserName, FromUserName, rep_text)
         resp_xml_str = xmltodict.unparse(resp_dict)
         return resp_xml_str
 
-def make_msg(text):
+def make_msg(ToUserName, FromUserName, text):
     resp_dict = {
         "xml": {
-        "ToUserName": xml_dict.get("FromUserName"),
-        "FromUserName": xml_dict.get("ToUserName"),
+        "ToUserName": ToUserName,
+        "FromUserName": FromUserName,
         "CreateTime": int(time.time()),
         "MsgType": "text",
         "Content": text
