@@ -187,8 +187,6 @@ def msg_deal():
         ToUserName = xml_dict.get("ToUserName")
         msg_type = xml_dict.get("MsgType")
         msg = xml_dict.get("Content")
-        resp_dict = make_msg(ToUserName, FromUserName, "testttt")
-        return xmltodict.unparse(resp_dict)
         if msg_type == "text":
             # 判断是否为房间号 + 座位号
             if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
