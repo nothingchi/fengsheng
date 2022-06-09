@@ -280,7 +280,7 @@ def generate_roles(numPlayers):
     rooms[roomid] = results
     ind = 1
     for role in results:
-        role_roomid = roomid + ind
+        role_roomid = roomid + str(ind)
         rooms[role_roomid] = role
         ind += 1
     return roomid
