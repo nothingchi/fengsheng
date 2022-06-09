@@ -33,6 +33,9 @@ roles = {
 "minions": ["荡妇", "男爵", "间谍", "下毒者"],
 "demon": ["小恶魔"]
 }
+
+rooms = {}
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     """
@@ -90,6 +93,16 @@ def index():
                 role = role + "({})".format(random_inside_role)
             results.append(("爪牙", role))
         results.append(("恶魔", "小恶魔"))
+
+        roomid = str(random.randint(1000, 9999))
+        while roomid in rooms:
+            roomid = str(random.randint(1000, 9999))
+        rooms[roomid] = results
+        ind = 1
+        for role in results:
+            role_roomid = roomid + ind
+            rooms[role_roomid] = role
+            ind += 1
 
     return render_template('index.html', results=results)
 
@@ -166,17 +179,107 @@ def msg_deal():
         xml_dict = xmltodict.parse(xml_str)
         xml_dict = xml_dict.get("xml")
         msg_type = xml_dict.get("MsgType")
+        msg = xml_dict.get("Content")
         if msg_type == "text":
-            resp_dict = {
-                "xml": {
-                "ToUserName": xml_dict.get("FromUserName"),
-                "FromUserName": xml_dict.get("ToUserName"),
-                "CreateTime": int(time.time()),
-                "MsgType": "text",
-                "Content": "你的消息：" + xml_dict.get("Content")
-                }
-            }
+            # 判断是否为房间号 + 座位号
+            if (len(msg) == 5 or len(msg) == 6) and msg_type.isdigit():
+                if msg in rooms:
+                    rep_text = "你的角色是：" + rooms[msg]
+                else:
+                    rep_text = "房间号输错了，蠢0"
+            elif "染" in msg:
+                if msg.split("染")[1].isdigit():
+                    numPlayer = int(msg.split("染")[1])
+                    roomid = generate_roles(numPlayer)
+                    if roomid != "-1":
+                        rep_roomid = "房间号：{}\n".format(roomid)
+                        rep_mod = "板子：灾祸滋生\n"
+                        rep_numPlayers = "人数：{}\n".format(numPlayer)
+                        rep_roles = "\n"
+                        for ind, role in rooms[roomid]:
+                            rep_roles += "{}号: {}\n".format(ind, role)
+                        rep_text = rep_roomid + rep_mod + rep_numPlayers + rep_roles
+                    else:
+                        rep_text = "人数错了，8-15人"
+                else:
+                    rep_text = "格式错了，例子：染10"
+            else:
+                rep_text = "知道了，别发了"
+            resp_dict = make_msg(rep_text)
         resp_xml_str = xmltodict.unparse(resp_dict)
         return resp_xml_str
 
+def make_msg(text):
+    resp_dict = {
+        "xml": {
+        "ToUserName": xml_dict.get("FromUserName"),
+        "FromUserName": xml_dict.get("ToUserName"),
+        "CreateTime": int(time.time()),
+        "MsgType": "text",
+        "Content": text
+        }
+    }
 
+    return resp_dict
+
+def generate_roles(numPlayers):
+    NumPlayer = numPlayers
+    if NumPlayer > 15 or NumPlayer < 8:
+        return "-1"
+    NumIndex = NumPlayer - 1
+    numConfig = numPlayerConfig[NumIndex]
+    villagersNum = numConfig[0]
+    outsiderNum = numConfig[1]
+    minionsNum = numConfig[2]
+    demonNum = numConfig[3]
+    # 首先抽取爪牙看是否有男爵
+    random.shuffle(roles["minions"])
+    minions = roles["minions"][0: minionsNum]
+    if "男爵" in minions:
+        villagersNum -= 2
+        outsiderNum += 2
+    # 抽取外来者看是否有酒鬼
+    random.shuffle(roles["outsider"])
+    outsider = roles["outsider"][0: outsiderNum]
+    if "酒鬼" in outsider:
+        villagersNum += 1 #内置一张酒鬼牌
+    random.shuffle(roles["villagers"])
+    villagers = roles["villagers"][0: villagersNum]
+
+    # 如果有酒鬼，在村名中随机标记一个
+    if "酒鬼" in outsider:
+        ran_ind = random.randint(0, len(villagers) - 1)
+        villagers[ran_ind] = villagers[ran_ind] + "(酒鬼)"
+
+    for role in villagers:
+        results.append(("村民", role))
+
+    for role in outsider:
+        if "酒鬼" == role:
+            continue
+        # 如果有隐士，在恶魔，爪牙，隐士中随机内置一个身份
+        if "隐士" == role:
+            random_inside_role = random.choice(["恶魔", "间谍", "荡妇", "男爵", "下毒者", "隐士"])
+            role = role + "({})".format(random_inside_role)
+        results.append(("外来者", role))
+    for role in minions:
+        # 如果有间谍，在村民，外来者，间谍中随机内置一个身份
+        # 为了避免套娃逻辑，间谍不会被内置为隐士和酒鬼
+        if "间谍" == role:
+            tmpRoles = ["管家", "圣徒", "间谍"]
+            tmpRoles.extend(roles["villagers"])
+            random_inside_role = random.choice(tmpRoles)
+            role = role + "({})".format(random_inside_role)
+        results.append(("爪牙", role))
+    results.append(("恶魔", "小恶魔"))
+
+    roomid = str(random.randint(1000, 9999))
+    while roomid in rooms:
+        roomid = str(random.randint(1000, 9999))
+    rooms[roomid] = results
+    ind = 1
+    for role in results:
+        role_roomid = roomid + ind
+        rooms[role_roomid] = role
+        ind += 1
+    return roomid
