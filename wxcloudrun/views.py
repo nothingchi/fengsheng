@@ -164,6 +164,11 @@ def get_count():
     return make_succ_response(0) if counter is None else make_succ_response(counter.count)
 
 
+
+@app.route('/lookup', methods=['GET'])
+def lookup():
+    return rooms
+
 @app.route('/wechatinterface', methods=['GET', 'POST'])
 def msg_deal():
     if request.method == "GET":
@@ -279,7 +284,6 @@ def generate_roles(numPlayers):
     roomid = str(random.randint(1000, 9999))
     while roomid in rooms:
         roomid = str(random.randint(1000, 9999))
-    rooms[roomid] = results
     ind = 1
     random.shuffle(results)
     final_results = []
@@ -288,4 +292,5 @@ def generate_roles(numPlayers):
         rooms[role_roomid] = role
         final_results.append((ind, role))
         ind += 1
+    rooms[roomid] = final_results
     return roomid
