@@ -192,7 +192,10 @@ def msg_deal():
             # 判断是否为房间号 + 座位号
             if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
                 if msg in rooms and msg not in rooms_role_flag:
-                    rep_text = "你的角色是：" + rooms[msg]
+                    role = rooms[msg]
+                    if "(" in role:
+                        role = role.split("(")[0]
+                    rep_text = "你的角色是：" + role
                     rooms_role_flag[msg] = 1
                 elif msg in rooms_role_flag:
                     rep_text = "这个号码已经被人抽走啦，请确认下号码"
