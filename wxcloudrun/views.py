@@ -35,6 +35,7 @@ roles = {
 }
 
 rooms = {}
+rooms_role_flag = {}
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -190,8 +191,11 @@ def msg_deal():
         if msg_type == "text":
             # 判断是否为房间号 + 座位号
             if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
-                if msg in rooms:
+                if msg in rooms and msg not in rooms_role_flag:
                     rep_text = "你的角色是：" + rooms[msg]
+                    rooms_role_flag[msg] = 1
+                elif msg in rooms_role_flag:
+                    rep_text = "这个号码已经被人抽走啦，请确认下号码"
                 else:
                     rep_text = "房间号输错了，蠢0"
             elif "染" in msg:
