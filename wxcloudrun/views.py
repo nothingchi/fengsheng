@@ -205,10 +205,13 @@ def msg_deal():
                         addition = "\n三个不在场的角色有: {}\n你的爪牙是: {}\n".format(" ".join(emo_choice[0:3]), " ".join(minion_ind))
                     if role_0 == "爪牙":
                         emo_ind = "0"
+                        minion_ind = []
                         for ind, rolea in rooms[msg[:4]]:
                             if rolea[0] == "恶魔":
                                 emo_ind = ind
-                        addition = "\n你的恶魔是: {}\n".format(emo_ind)
+                            if rolea[0] == "爪牙" and msg[4:] != str(ind):
+                                minion_ind.append(str(ind))
+                        addition = "\n你的恶魔是: {}\n你的爪牙同伴是: {}".format(emo_ind, " ".join(minion_ind))
                     if "(" in role:
                         role = role.split("(")[0]
                     rep_text = "你的角色是：" + role + addition
