@@ -199,14 +199,14 @@ def msg_deal():
                         emo_choice = rooms[msg[:4]+"no"]
                         random.shuffle(emo_choice)
                         minion_ind = []
-                        for ind, role in rooms[msg[:4]]:
-                            if role[0] == "爪牙":
+                        for ind, rolea in rooms[msg[:4]]:
+                            if rolea[0] == "爪牙":
                                 minion_ind.append(str(ind))
                         addition = "\n三个不在场的角色有: {}\n你的爪牙是: {}\n".format(" ".join(emo_choice[0:3]), " ".join(minion_ind))
                     if role_0 == "爪牙":
                         emo_ind = "0"
-                        for ind, role in rooms[msg[:4]]:
-                            if role[0] == "恶魔":
+                        for ind, rolea in rooms[msg[:4]]:
+                            if rolea[0] == "恶魔":
                                 emo_ind = ind
                         addition = "\n你的恶魔是: {}\n".format(emo_ind)
                     if "(" in role:
