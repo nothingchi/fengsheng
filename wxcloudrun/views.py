@@ -196,7 +196,8 @@ def msg_deal():
                     role_0 = role.split(' ')[0]
                     addition = ""
                     if role_0 == "恶魔":
-                        emo_choice = random.shuffle(rooms[msg[:4]+"no"])
+                        emo_choice = rooms[msg[:4]+"no"]
+                        random.shuffle(emo_choice)
                         minion_ind = []
                         for ind, role in rooms[msg[:4]]:
                             if role[0] == "爪牙":
