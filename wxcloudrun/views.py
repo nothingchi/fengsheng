@@ -193,14 +193,29 @@ def msg_deal():
             if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
                 if msg in rooms and msg not in rooms_role_flag:
                     role = rooms[msg]
+                    role_0 = role.split(' ')[0]
+                    addition = ""
+                    if role_0 == "恶魔":
+                        emo_choice = random.shuffle(rooms[msg[:4]+"no"])
+                        minion_ind = []
+                        for ind, role in rooms[msg[:4]]:
+                            if role[0] == "爪牙":
+                                minion_ind.append(ind)
+                        addition = "\n三个不在场的角色有: {}\n你的爪牙是: {}\n".format(" ".join(emo_choice[0:3]), " ".join(minion_ind))
+                    if role_0 == "爪牙":
+                        emo_ind = "0"
+                        for ind, role in rooms[msg[:4]]:
+                            if role[0] == "恶魔":
+                                emo_ind = ind
+                        addition = "\n你的恶魔是: {}\n".format(emo_ind)
                     if "(" in role:
                         role = role.split("(")[0]
-                    rep_text = "你的角色是：" + role
+                    rep_text = "你的角色是：" + role + addition
                     rooms_role_flag[msg] = 1
                 elif msg in rooms_role_flag:
                     rep_text = "这个号码已经被人抽走啦，请确认下号码"
                 else:
-                    rep_text = "房间号输错了，蠢0"
+                    rep_text = "房间号输错了，请重新确认房间号"
             elif "染" in msg:
                 if msg.split("染")[1].isdigit():
                     numPlayer = int(msg.split("染")[1])
@@ -264,13 +279,26 @@ def generate_roles(numPlayers):
     villagers = roles["villagers"][0: villagersNum]
 
     # 如果有酒鬼，在村名中随机标记一个
+    drink_block = ""
     if "酒鬼" in outsider:
         ran_ind = random.randint(0, len(villagers) - 1)
+        drink_block = villagers[ran_ind]
         villagers[ran_ind] = villagers[ran_ind] + "(酒鬼)"
-
+    chosen_roles = [i for i in villagers]
+    chosen_roles.append(drink_block)
+    no_show_good = []
+    for rol in roles["villagers"]:
+        if rol not in chosen_roles:
+            no_show_good.append(rol)
+    for rol in roles["outsider"]:
+        if rol not in chosen_roles:
+            if drink_block != "" and rol == "酒鬼":
+                continue
+            no_show_good.append(rol)
     for role in villagers:
         results.append(("村民", role))
 
+    
     for role in outsider:
         if "酒鬼" == role:
             continue
@@ -302,4 +330,5 @@ def generate_roles(numPlayers):
         final_results.append((ind, role))
         ind += 1
     rooms[roomid] = final_results
+    rooms[roomid + "no"] = no_show_good
     return roomid
