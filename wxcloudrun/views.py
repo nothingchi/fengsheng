@@ -264,16 +264,15 @@ def msg_deal():
                         if "酒鬼" in role[1]:
                             drink_block = role[1]
                         role_ind[role_show] = ind
-                     tmp_rep_text = "本夜行动顺序:\n"
-                     for act in tmp_action_order:
-                         if act in role_ind:
-                             if act in drink_block:
-                                 tmp_rep_text += "{}号 {}\n".format(role_ind[act], drink_block)
-                             else:
-                                 tmp_rep_text += "{}号 {}\n".format(role_ind[act], act)
-                      dm_user_room[FromUserName]["round"].append(1)
-
-                      rep_text = tmp_rep_text   
+                    tmp_rep_text = "本夜行动顺序:\n"
+                    for act in tmp_action_order:
+                        if act in role_ind:
+                            if act in drink_block:
+                                tmp_rep_text += "{}号 {}\n".format(role_ind[act], drink_block)
+                            else:
+                                tmp_rep_text += "{}号 {}\n".format(role_ind[act], act)
+                    dm_user_room[FromUserName]["round"].append(1)
+                    rep_text = tmp_rep_text
             else:
                 rep_text = "知道了，别发了"
             resp_dict = make_msg(FromUserName, ToUserName, rep_text)
