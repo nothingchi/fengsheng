@@ -34,8 +34,13 @@ roles = {
 "demon": ["小恶魔"]
 }
 
+action_order = {"first":["下毒者", "洗衣妇人", "图书管理员", "调查员", "厨师", "共请者", "占卜师", "管家", "间谍"], 
+                "other":["下毒者", "僧侣", "荡妇", "恶魔", "共情者", "占卜师", "守鸦人", "掘墓人", "管家", "间谍"]}
+
 rooms = {}
 rooms_role_flag = {}
+
+dm_user_room = {}
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -212,6 +217,11 @@ def msg_deal():
                             if rolea[0] == "爪牙" and msg[4:] != str(ind):
                                 minion_ind.append(str(ind))
                         addition = "\n你的恶魔是: {}\n你的爪牙同伴是: {}".format(emo_ind, " ".join(minion_ind))
+                        if "间谍" in role_1:
+                            rep_roles = "\n"
+                            for indt, rolet in rooms[roomid]:
+                                rep_roles += "{}号: {} {}\n".format(ind, role[0], role[1])
+                            addition += rep_roles
                     if "(" in role:
                         role = role.split("(")[0]
                     rep_text = "你的角色是：" + role + addition
@@ -232,10 +242,42 @@ def msg_deal():
                         for ind, role in rooms[roomid]:
                             rep_roles += "{}号: {} {}\n".format(ind, role[0], role[1])
                         rep_text = rep_roomid + rep_mod + rep_numPlayers + rep_roles
+                        dm_user_room[FromUserName] = {"roomid":roomid, "round":[]}
                     else:
                         rep_text = "人数错了，8-15人"
                 else:
                     rep_text = "格式错了，例子：染10"
+            elif "夜" in msg:
+                if FromUserName not in dm_user_room:
+                    rep_text = "你需要先创建房间"
+                else:
+                    round_his = dm_user_room[FromUserName]["round"]
+                    is_first = False
+                    if len(round_his) == 0:
+                        is_first = True
+                    roomid = dm_user_room[FromUserName]["roomid"]
+                    role_ind = {}
+                    drink_block = ""
+                    for ind, role in rooms[roomid]:
+                        role_show = role[1].split("(")[0]
+                        if "酒鬼" in role[1]:
+                            drink_block = role[1]
+                        role_ind[role_show] = ind
+
+                     if is_first:
+                         tmp_action_order = action_order["first"]
+                     else:
+                         tmp_action_order = action_order["second"]
+                     tmp_rep_text = "本夜行动顺序:\n"
+                     for act in tmp_action_order:
+                         if act in role_ind:
+                             if act in drink_block:
+                                 tmp_rep_text += "{}号 {}\n".format(role_ind[act], drink_block)
+                             else:
+                                 tmp_rep_text += "{}号 {}\n".format(role_ind[act], act)
+                      dm_user_room[FromUserName]["round"].append(1)
+
+                      rep_text = tmp_rep_text   
             else:
                 rep_text = "知道了，别发了"
             resp_dict = make_msg(FromUserName, ToUserName, rep_text)
@@ -289,6 +331,8 @@ def generate_roles(numPlayers):
         drink_block = villagers[ran_ind]
         villagers[ran_ind] = villagers[ran_ind] + "(酒鬼)"
     chosen_roles = [i for i in villagers]
+    for o in outsider:
+        chosen_roles.append(o)
     chosen_roles.append(drink_block)
     no_show_good = []
     for rol in roles["villagers"]:
@@ -296,8 +340,6 @@ def generate_roles(numPlayers):
             no_show_good.append(rol)
     for rol in roles["outsider"]:
         if rol not in chosen_roles:
-            if drink_block != "" and rol == "酒鬼":
-                continue
             no_show_good.append(rol)
     for role in villagers:
         results.append(("村民", role))
