@@ -252,9 +252,10 @@ def msg_deal():
                     rep_text = "你需要先创建房间"
                 else:
                     round_his = dm_user_room[FromUserName]["round"]
-                    is_first = False
                     if len(round_his) == 0:
-                        is_first = True
+                        tmp_action_order = action_order["first"]
+                    else:
+                        tmp_action_order = action_order["other"]
                     roomid = dm_user_room[FromUserName]["roomid"]
                     role_ind = {}
                     drink_block = ""
@@ -263,11 +264,6 @@ def msg_deal():
                         if "酒鬼" in role[1]:
                             drink_block = role[1]
                         role_ind[role_show] = ind
-
-                     if is_first:
-                         tmp_action_order = action_order["first"]
-                     else:
-                         tmp_action_order = action_order["second"]
                      tmp_rep_text = "本夜行动顺序:\n"
                      for act in tmp_action_order:
                          if act in role_ind:
