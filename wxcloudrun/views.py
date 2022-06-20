@@ -219,7 +219,7 @@ def msg_deal():
                         addition = "\n你的恶魔是: {}\n你的爪牙同伴是: {}".format(emo_ind, " ".join(minion_ind))
                         if "间谍" in role:
                             rep_roles = "\n"
-                            for indt, rolet in rooms[roomid]:
+                            for indt, rolet in rooms[msg[:4]]:
                                 rep_roles += "{}号: {} {}\n".format(indt, rolet[0], rolet[1])
                             addition += rep_roles
                     if "(" in role:
