@@ -6,7 +6,6 @@
 
 ![](https://qcloudimg.tencent-cloud.cn/raw/be22992d297d1b9a1a5365e606276781.png)
 
-
 ## 生成角色
 输入 染 + 游戏人数，如10名玩家，则输入：染10
 

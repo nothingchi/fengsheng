@@ -35,7 +35,7 @@ roles = {
 }
 
 action_order = {"first":["下毒者", "洗衣妇人", "图书管理员", "调查员", "厨师", "共请者", "占卜师", "管家", "间谍"], 
-                "other":["下毒者", "僧侣", "荡妇", "恶魔", "共情者", "占卜师", "守鸦人", "掘墓人", "管家", "间谍"]}
+                "other":["下毒者", "僧侣", "荡妇", "小恶魔", "共情者", "占卜师", "守鸦人", "掘墓人", "管家", "间谍"]}
 
 rooms = {}
 rooms_role_flag = {}
@@ -217,10 +217,10 @@ def msg_deal():
                             if rolea[0] == "爪牙" and msg[4:] != str(ind):
                                 minion_ind.append(str(ind))
                         addition = "\n你的恶魔是: {}\n你的爪牙同伴是: {}".format(emo_ind, " ".join(minion_ind))
-                        if "间谍" in role_1:
+                        if "间谍" in role:
                             rep_roles = "\n"
                             for indt, rolet in rooms[roomid]:
-                                rep_roles += "{}号: {} {}\n".format(ind, role[0], role[1])
+                                rep_roles += "{}号: {} {}\n".format(indt, rolet[0], rolet[1])
                             addition += rep_roles
                     if "(" in role:
                         role = role.split("(")[0]
