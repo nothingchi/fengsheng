@@ -280,7 +280,7 @@ def msg_deal():
                         roomid = dm_user_room[FromUserName]["roomid"]
                         dn = msg.split("死")[1]
                         rooms[roomid + "d"].append(dn)
-                        rep_text = "{}号已死, 当前死亡玩家有: {}".format(dn, ", ".join([for i in  ooms[roomid + "d"]]))
+                        rep_text = "{}号已死, 当前死亡玩家有: {}".format(dn, ", ".join([for i in rooms[roomid + "d"]]))
             else:
                 rep_text = "知道了，别发了"
             resp_dict = make_msg(FromUserName, ToUserName, rep_text)
