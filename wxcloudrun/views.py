@@ -276,9 +276,9 @@ def msg_deal():
                                     tmp_rep_text += "{}号 {}\n".format(role_ind[act], act)
                         dm_user_room[FromUserName]["round"].append(1)
                         rep_text = tmp_rep_text
-		    elif "死" in msg:
+                    elif "死" in msg:
                         roomid = dm_user_room[FromUserName]["roomid"]
-			dn = msg.split("死")[1]
+                        dn = msg.split("死")[1]
                         rooms[roomid + "d"].append(dn)
                         rep_text = "{}号已死, 当前死亡玩家有: {}".format(dn, ", ".join([for i in  ooms[roomid + "d"]]))
             else:
