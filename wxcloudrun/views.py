@@ -34,7 +34,7 @@ roles = {
 "demon": ["小恶魔"]
 }
 
-action_order = {"first":["下毒者", "洗衣妇人", "图书管理员", "调查员", "厨师", "共请者", "占卜师", "管家", "间谍"], 
+action_order = {"first":["下毒者", "洗衣妇人", "图书管理员", "调查员", "厨师", "共情者", "占卜师", "管家", "间谍"], 
                 "other":["下毒者", "僧侣", "荡妇", "小恶魔", "共情者", "占卜师", "守鸦人", "掘墓人", "管家", "间谍"]}
 
 rooms = {}
@@ -247,32 +247,40 @@ def msg_deal():
                         rep_text = "人数错了，8-15人"
                 else:
                     rep_text = "格式错了，例子：染10"
-            elif "夜" in msg:
+            elif "夜" or "死" in msg:
                 if FromUserName not in dm_user_room:
                     rep_text = "你需要先创建房间"
                 else:
-                    round_his = dm_user_room[FromUserName]["round"]
-                    if len(round_his) == 0:
-                        tmp_action_order = action_order["first"]
-                    else:
-                        tmp_action_order = action_order["other"]
-                    roomid = dm_user_room[FromUserName]["roomid"]
-                    role_ind = {}
-                    drink_block = ""
-                    for ind, role in rooms[roomid]:
-                        role_show = role[1].split("(")[0]
-                        if "酒鬼" in role[1]:
-                            drink_block = role[1]
-                        role_ind[role_show] = ind
-                    tmp_rep_text = "本夜行动顺序:\n"
-                    for act in tmp_action_order:
-                        if act in role_ind:
-                            if act in drink_block:
-                                tmp_rep_text += "{}号 {}\n".format(role_ind[act], drink_block)
-                            else:
-                                tmp_rep_text += "{}号 {}\n".format(role_ind[act], act)
-                    dm_user_room[FromUserName]["round"].append(1)
-                    rep_text = tmp_rep_text
+                    if "夜" in msg:
+                        round_his = dm_user_room[FromUserName]["round"]
+                        if len(round_his) == 0:
+                            tmp_action_order = action_order["first"]
+                        else:
+                            tmp_action_order = action_order["other"]
+                        roomid = dm_user_room[FromUserName]["roomid"]
+                        role_ind = {}
+                        drink_block = ""
+                        for ind, role in rooms[roomid]:
+                            role_show = role[1].split("(")[0]
+                            if "酒鬼" in role[1]:
+                                drink_block = role[1]
+                            if str(ind) in rooms[roomid + "d"]:
+                                continue
+                            role_ind[role_show] = ind
+                        tmp_rep_text = "本夜行动顺序:\n"
+                        for act in tmp_action_order:
+                            if act in role_ind:
+                                if act in drink_block:
+                                    tmp_rep_text += "{}号 {}\n".format(role_ind[act], drink_block)
+                                else:
+                                    tmp_rep_text += "{}号 {}\n".format(role_ind[act], act)
+                        dm_user_room[FromUserName]["round"].append(1)
+                        rep_text = tmp_rep_text
+		    elif "死" in msg:
+                        roomid = dm_user_room[FromUserName]["roomid"]
+			dn = msg.split("死")[1]
+                        rooms[roomid + "d"].append(dn)
+                        rep_text = "{}号已死, 当前死亡玩家有: {}".format(dn, ", ".join([for i in  ooms[roomid + "d"]]))
             else:
                 rep_text = "知道了，别发了"
             resp_dict = make_msg(FromUserName, ToUserName, rep_text)
@@ -372,4 +380,5 @@ def generate_roles(numPlayers):
         ind += 1
     rooms[roomid] = final_results
     rooms[roomid + "no"] = no_show_good
+    rooms[roomid + "d"] = []
     return roomid
