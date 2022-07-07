@@ -8,6 +8,7 @@ import hashlib
 import xmltodict
 import time
 import random
+import configparser
 
 numPlayerConfig = [
 [], #1
@@ -51,6 +52,10 @@ rooms = {}
 rooms_role_flag = {}
 
 dm_user_room = {}
+
+config = configparser.ConfigParser()
+config.read("./wxcloudrun/roles.ini")
+print(config.sections())
 
 @app.route('/', methods=['POST', 'GET'])
 def index():
@@ -234,7 +239,12 @@ def msg_deal():
                             addition += rep_roles
                     if "(" in role:
                         role = role.split("(")[0]
-                    rep_text = "你的角色是：" + role + addition
+                    clear_role = role.split(" ")[1]
+                    word = config.get(clear_role, "word")
+                    ablility = config.get(clear_role, "ablility")
+                    prompt = config.get(clear_role, "prompt")
+                    rep_text = "{}\n你的角色是: {}\n{}\n你的技能是: {}\n提示: {}".format(word, role, addition, ablility, prompt)
+                    #rep_text = "你的角色是：" + role + addition
                     rooms_role_flag[msg] = 1
                 elif msg in rooms_role_flag:
                     rep_text = "这个号码已经被人抽走啦，请确认下号码"
