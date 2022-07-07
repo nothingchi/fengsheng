@@ -35,14 +35,17 @@ zaihuo_roles = {
 }
 
 zhenhuan_roles = {
-"villagers": ["甄嬛", "玉娆", "年羹尧", "瑾汐姑姑"，"浣碧", "纯元皇后", "果郡王", "敬妃", "太后", "温实初", "三阿哥", "叶澜依", "祺贵人"],
+"villagers": ["甄嬛", "玉娆", "年羹尧", "槿汐姑姑", "浣碧", "纯元皇后", "果郡王", "敬妃", "太后", "温实初", "三阿哥", "叶澜依", "祺贵人"],
 "outsider": ["齐妃", "敦亲王", "胧月", "孙答应", "狂徒"],
 "minions": ["苏培盛", "华妃", "安陵容", "皇后"],
 "demon": ["皇上"]
 }
 
-action_order = {"first":["下毒者", "洗衣妇人", "图书管理员", "调查员", "厨师", "共情者", "占卜师", "管家", "间谍"], 
+zaihuo_action_order = {"first":["下毒者", "洗衣妇人", "图书管理员", "调查员", "厨师", "共情者", "占卜师", "管家", "间谍"], 
                 "other":["下毒者", "僧侣", "荡妇", "小恶魔", "共情者", "占卜师", "守鸦人", "掘墓人", "管家", "间谍"]}
+
+zhenhuan_action_order = {"first":["果郡王", "安陵容", "华妃", "玉娆", "槿汐姑姑", "浣碧", "敬妃", "温实初"], 
+                "other":["果郡王", "安陵容", "皇上", "宠妃", "槿汐姑姑", "叶澜依", "华妃", "三阿哥", "温实初"]}
 
 rooms = {}
 rooms_role_flag = {}
@@ -239,7 +242,7 @@ def msg_deal():
                     rep_text = "房间号输错了，请重新确认房间号"
             elif "染" in msg:
                 mod, num_player = msg.split("染")
-                if mod = "甄嬛":
+                if mod == "甄嬛":
                     modb = "zhenhuan"
                     mod_text = "甄嬛mod"
                 else:
@@ -256,7 +259,7 @@ def msg_deal():
                         for ind, role in rooms[roomid]:
                             rep_roles += "{}号: {} {}\n".format(ind, role[0], role[1])
                         rep_text = rep_roomid + rep_mod + rep_numPlayers + rep_roles
-                        dm_user_room[FromUserName] = {"roomid":roomid, "round":[]}
+                        dm_user_room[FromUserName] = {"roomid":roomid, "round":[], "mod":modb}
                     else:
                         rep_text = "人数错了，8-15人"
                 else:
@@ -267,6 +270,11 @@ def msg_deal():
                 else:
                     if "夜" in msg:
                         round_his = dm_user_room[FromUserName]["round"]
+                        mod = dm_user_room[FromUserName]["mod"]
+                        if mod == "zhenhuan":
+                            action_order = zhenhuan_action_order
+                        else:
+                            action_order = zaihuo_action_order
                         if len(round_his) == 0:
                             tmp_action_order = action_order["first"]
                         else:
