@@ -27,11 +27,18 @@ numPlayerConfig = [
 [9, 2, 3, 1] #15
 ]
 
-roles = {
+zaihuo_roles = {
 "villagers": ["洗衣妇人", "图书管理员", "调查员", "厨师", "僧侣", "共情者", "占卜师", "守鸦人", "士兵", "市长", "杀手", "掘墓人", "圣女"],
 "outsider": ["圣徒", "酒鬼", "隐士", "管家"],
 "minions": ["荡妇", "男爵", "间谍", "下毒者"],
 "demon": ["小恶魔"]
+}
+
+zhenhuan_roles = {
+"villagers": ["甄嬛", "玉娆", "年羹尧", "瑾汐姑姑"，"浣碧", "纯元皇后", "果郡王", "敬妃", "太后", "温实初", "三阿哥", "叶澜依", "祺贵人"],
+"outsider": ["齐妃", "敦亲王", "胧月", "孙答应", "狂徒"],
+"minions": ["苏培盛", "华妃", "安陵容", "皇后"],
+"demon": ["皇上"]
 }
 
 action_order = {"first":["下毒者", "洗衣妇人", "图书管理员", "调查员", "厨师", "共情者", "占卜师", "管家", "间谍"], 
@@ -231,12 +238,19 @@ def msg_deal():
                 else:
                     rep_text = "房间号输错了，请重新确认房间号"
             elif "染" in msg:
-                if msg.split("染")[1].isdigit():
-                    numPlayer = int(msg.split("染")[1])
-                    roomid = generate_roles(numPlayer)
+                mod, num_player = msg.split("染")
+                if mod = "甄嬛":
+                    modb = "zhenhuan"
+                    mod_text = "甄嬛mod"
+                else:
+                    modb = "zaihuo"
+                    mod_text = "灾祸滋生"
+                if num_player.isdigit():
+                    numPlayer = int(num_player)
+                    roomid = generate_roles(numPlayer, modb)
                     if roomid != "-1":
                         rep_roomid = "房间号：{}\n".format(roomid)
-                        rep_mod = "板子：灾祸滋生\n"
+                        rep_mod = "板子：{}\n".format(mod_text)
                         rep_numPlayers = "人数：{}\n".format(numPlayer)
                         rep_roles = "\n"
                         for ind, role in rooms[roomid]:
@@ -246,7 +260,7 @@ def msg_deal():
                     else:
                         rep_text = "人数错了，8-15人"
                 else:
-                    rep_text = "格式错了，例子：染10"
+                    rep_text = "格式错了，例子：甄嬛染10"
             elif "夜" or "死" in msg:
                 if FromUserName not in dm_user_room:
                     rep_text = "你需要先创建房间"
@@ -302,11 +316,17 @@ def make_msg(ToUserName, FromUserName, text):
 
     return resp_dict
 
-def generate_roles(numPlayers):
+def generate_roles(numPlayers, mod = "zaihuo"):
     results = []
     NumPlayer = numPlayers
     if NumPlayer > 15 or NumPlayer < 8:
         return "-1"
+    if mod == "zaihuo":
+        roles = zaihuo_roles
+    elif mod == "zhenhuan":
+        roles = zhenhuan_roles
+    else:
+        roles = zaihuo_roles
     NumIndex = NumPlayer - 1
     numConfig = numPlayerConfig[NumIndex]
     villagersNum = numConfig[0]
@@ -314,11 +334,15 @@ def generate_roles(numPlayers):
     minionsNum = numConfig[2]
     demonNum = numConfig[3]
     # 首先抽取爪牙看是否有男爵
+    # 甄嬛mod判断是否有苏培盛
     random.shuffle(roles["minions"])
     minions = roles["minions"][0: minionsNum]
     if "男爵" in minions:
         villagersNum -= 2
         outsiderNum += 2
+    if "苏培盛" in minions:
+        villagersNum -= 1
+        outsiderNum += 1
     # 抽取外来者看是否有酒鬼
     random.shuffle(roles["outsider"])
     outsider = roles["outsider"][0: outsiderNum]
@@ -365,7 +389,8 @@ def generate_roles(numPlayers):
             random_inside_role = random.choice(tmpRoles)
             role = role + "({})".format(random_inside_role)
         results.append(("爪牙", role))
-    results.append(("恶魔", "小恶魔"))
+    demon = random.choice(roles["demon"])
+    results.append(("恶魔", demon))
 
     roomid = str(random.randint(1000, 9999))
     while roomid in rooms:
