@@ -243,7 +243,7 @@ def msg_deal():
                     word = config.get(clear_role, "word")
                     ability = config.get(clear_role, "ability")
                     prompt = config.get(clear_role, "prompt")
-                    rep_text = "{}\n你的角色是: {}\n{}\n你的技能是: {}\n提示: {}".format(word, role, addition, ability, prompt)
+                    rep_text = "{}\n\n你的角色是: {}\n{}\n你的技能是: {}\n\n提示: {}\n".format(word, role, addition, ability, prompt)
                     #rep_text = "你的角色是：" + role + addition
                     rooms_role_flag[msg] = 1
                 elif msg in rooms_role_flag:
