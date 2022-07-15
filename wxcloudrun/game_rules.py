@@ -1,6 +1,6 @@
 import random
 
-def get_roles(roomid, rooms, rooms_role_flag, config):
+def get_roles(msg, rooms, rooms_role_flag, config):
     if msg in rooms and msg not in rooms_role_flag:
         role = rooms[msg]
         role_0 = role.split(' ')[0]

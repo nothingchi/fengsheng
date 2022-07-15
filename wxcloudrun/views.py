@@ -160,8 +160,7 @@ def msg_deal():
         if msg_type == "text":
             # 判断是否为房间号 + 座位号
             if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
-                roomid = msg
-                rep_text = get_roles(roomid, rooms, rooms_role_flag, config)
+                rep_text = get_roles(msg, rooms, rooms_role_flag, config)
                 '''
                 if msg in rooms and msg not in rooms_role_flag:
                     role = rooms[msg]
