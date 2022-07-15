@@ -4,12 +4,12 @@ from run import app
 from wxcloudrun.dao import delete_counterbyid, query_counterbyid, insert_counter, update_counterbyid
 from wxcloudrun.model import Counters
 from wxcloudrun.response import make_succ_empty_response, make_succ_response, make_err_response
+from wxcloudrun.game_rules import get_roles
 import hashlib
 import xmltodict
 import time
 import random
 import configparser
-from wxcloudrun.game_rules import get_roles
 
 numPlayerConfig = [
 [], #1
@@ -160,6 +160,7 @@ def msg_deal():
         if msg_type == "text":
             # 判断是否为房间号 + 座位号
             if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
+                roomid = msg
                 rep_text = get_roles(roomid, rooms, rooms_role_flag, config)
                 '''
                 if msg in rooms and msg not in rooms_role_flag:
