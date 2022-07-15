@@ -71,6 +71,7 @@ def index():
     :return: 返回index页面
     """
     results = []
+    rep_text = ""
     if request.method == "POST":
         form_data = request.form
         roomid = form_data.get("NumPlayer")
