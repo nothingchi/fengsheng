@@ -9,6 +9,7 @@ import xmltodict
 import time
 import random
 import configparser
+from wxcloudrun.game_rules import get_roles
 
 numPlayerConfig = [
 [], #1
@@ -57,6 +58,13 @@ config = configparser.ConfigParser()
 config.read("./wxcloudrun/roles.ini")
 print(config.sections())
 
+@app.route('/tess', methods=['POST', 'GET'])
+def tess():
+    """
+    :return: 返回index页面
+    """
+    return render_template('weui/src/example/form/form_vcode.html')
+
 @app.route('/', methods=['POST', 'GET'])
 def index():
     """
@@ -65,67 +73,8 @@ def index():
     results = []
     if request.method == "POST":
         form_data = request.form
-        NumPlayer = int(form_data.get("NumPlayer"))
-        if NumPlayer > 15 or NumPlayer < 8:
-            return "fake news"
-        NumIndex = NumPlayer - 1
-        numConfig = numPlayerConfig[NumIndex]
-        villagersNum = numConfig[0]
-        outsiderNum = numConfig[1]
-        minionsNum = numConfig[2]
-        demonNum = numConfig[3]
-        # 首先抽取爪牙看是否有男爵
-        random.shuffle(roles["minions"])
-        minions = roles["minions"][0: minionsNum]
-        if "男爵" in minions:
-            villagersNum -= 2
-            outsiderNum += 2
-        # 抽取外来者看是否有酒鬼
-        random.shuffle(roles["outsider"])
-        outsider = roles["outsider"][0: outsiderNum]
-        if "酒鬼" in outsider:
-            villagersNum += 1 #内置一张酒鬼牌
-        random.shuffle(roles["villagers"])
-        villagers = roles["villagers"][0: villagersNum]
-
-        # 如果有酒鬼，在村名中随机标记一个
-        if "酒鬼" in outsider:
-            ran_ind = random.randint(0, len(villagers) - 1)
-            villagers[ran_ind] = villagers[ran_ind] + "(酒鬼)"
-
-        for role in villagers:
-            results.append(("村民", role))
-
-        for role in outsider:
-            if "酒鬼" == role:
-                continue
-            # 如果有隐士，在恶魔，爪牙，隐士中随机内置一个身份
-            if "隐士" == role:
-                random_inside_role = random.choice(["恶魔", "间谍", "荡妇", "男爵", "下毒者", "隐士"])
-                role = role + "({})".format(random_inside_role)
-            results.append(("外来者", role))
-        for role in minions:
-            # 如果有间谍，在村民，外来者，间谍中随机内置一个身份
-            # 为了避免套娃逻辑，间谍不会被内置为隐士和酒鬼
-            if "间谍" == role:
-                tmpRoles = ["管家", "圣徒", "间谍"]
-                tmpRoles.extend(roles["villagers"])
-                random_inside_role = random.choice(tmpRoles)
-                role = role + "({})".format(random_inside_role)
-            results.append(("爪牙", role))
-        results.append(("恶魔", "小恶魔"))
-
-        roomid = str(random.randint(1000, 9999))
-        while roomid in rooms:
-            roomid = str(random.randint(1000, 9999))
-        rooms[roomid] = results
-        ind = 1
-        for role in results:
-            role_roomid = roomid + str(ind)
-            rooms[role_roomid] = role
-            ind += 1
-
-    return render_template('index.html', results=results)
+        roomid = form_data.get("NumPlayer")
+    return render_template('form_vcode.html')
 
 
 @app.route('/api/count', methods=['POST'])
@@ -211,6 +160,8 @@ def msg_deal():
         if msg_type == "text":
             # 判断是否为房间号 + 座位号
             if (len(msg) == 5 or len(msg) == 6) and msg.isdigit():
+                rep_text = get_roles(roomid, rooms, rooms_role_flag, config)
+                '''
                 if msg in rooms and msg not in rooms_role_flag:
                     role = rooms[msg]
                     role_0 = role.split(' ')[0]
@@ -250,6 +201,7 @@ def msg_deal():
                     rep_text = "这个号码已经被人抽走啦，请确认下号码"
                 else:
                     rep_text = "房间号输错了，请重新确认房间号"
+                '''
             elif "染" in msg:
                 mod, num_player = msg.split("染")
                 if mod == "甄嬛":

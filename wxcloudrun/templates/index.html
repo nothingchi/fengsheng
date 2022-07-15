@@ -15,7 +15,7 @@
       integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
       crossorigin="anonymous"
     />
-    <title>血染钟楼角色生成器</title>
+    <title>血染钟楼角色抽取</title>
     <style>
       .title-logo {
         height: 80px;
@@ -68,13 +68,12 @@
           class="title-logo"
           src="https://static-index-4gtuqm3bfa95c963-1304825656.tcloudbaseapp.com/official-website/favicon.svg"
         />
-        <h1 style="display: inline; margin-bottom: 48px;">血染钟楼角色生成器</h1>
+        <h1 style="display: inline; margin-bottom: 48px;">血染钟楼角色抽取</h1>
       </div>
       <div style="text-align: center">
       <form method="post">
-            模组: <input type="text" name="Mod" value="灾祸滋生" disabled="disabled" $style="background:#CCCCCC"><br>
-            人数: <input type="text" name="NumPlayer" value="10"><br>
-            <input type="submit" class="btn btn-success btn-lg count-button" value="确认" style="background: #07C160; border: 0;" onclick="set('confirm')">
+            房间号: <input type="text" name="roomid" value=""><br>
+            <input type="submit" class="btn btn-success btn-lg count-button" value="进入房间" style="background: #07C160; border: 0;" onclick="set('confirm')">
       </form>
         <div
           style="display: flex; justify-content: center; margin-bottom: 80px"
@@ -83,7 +82,7 @@
         <small
           class="text-black-50"
           style="display: flex; justify-content: center; margin-bottom: 16px"
-          >生成结果</small
+          >你的</small
         >
         <table>
             {% for i, j in results %}
